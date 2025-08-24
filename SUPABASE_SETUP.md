@@ -11,7 +11,7 @@ This guide will help you set up a production-ready PostgreSQL database using Sup
 3. **New Project**: Click "New project"
 4. **Project Details**:
    - **Name**: `levity-loyalty-mobile`
-   - **Database Password**: Generate a strong password (save it!)
+   - **Database Password**: Generate a strong password (save it!) OSR%8ipr16!e#Ea1
    - **Region**: Choose closest to your users
    - **Pricing**: Start with Free tier (perfect for development)
 
@@ -21,8 +21,8 @@ After project creation (takes ~2 minutes):
 
 1. **Go to Settings** → **API**
 2. **Copy these values**:
-   - **Project URL**: `https://your-project-id.supabase.co`
-   - **Anon Public Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
+   - **Project URL**: `https://ctqhnyvxowuruezekmqo.supabase.co`
+   - **Anon Public Key**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cWhueXZ4b3d1cnVlemVrbXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNjA4NjksImV4cCI6MjA3MTYzNjg2OX0.ANA3jw2Byp-7u6o30AH3j8IyclDgx5XivTk_WAfOH6k`
 
 ### Step 3: Update Environment Variables
 
@@ -52,86 +52,86 @@ EXPO_PUBLIC_USE_PRODUCTION_DB=true
 The following SQL creates all necessary tables and security policies:
 
 ```sql
--- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
-
--- Users table (extends Supabase auth.users)
+-- 1️⃣ Users table (extends Supabase auth.users)
 CREATE TABLE public.users (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
   email TEXT UNIQUE NOT NULL,
   name TEXT NOT NULL,
   points INTEGER DEFAULT 0,
-  join_date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  last_check_in TIMESTAMP WITH TIME ZONE,
-  is_active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  join_date TIMESTAMPTZ DEFAULT NOW(),
+  last_check_in TIMESTAMPTZ,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Points transactions table
+-- 2️⃣ User settings table
+CREATE TABLE public.user_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
+  notifications BOOLEAN DEFAULT TRUE,
+  haptic_feedback BOOLEAN DEFAULT TRUE,
+  auto_sync BOOLEAN DEFAULT TRUE,
+  theme TEXT CHECK (theme IN ('light', 'dark', 'auto')) DEFAULT 'auto',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 3️⃣ Points transactions table
 CREATE TABLE public.points_transactions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   points INTEGER NOT NULL,
   reason TEXT NOT NULL,
   type TEXT CHECK (type IN ('earned', 'redeemed')) NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   metadata JSONB
 );
 
--- Check-ins table
+-- 4️⃣ Check-ins table
 CREATE TABLE public.check_ins (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   location TEXT,
   points_earned INTEGER DEFAULT 10,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Redemptions table
+-- 5️⃣ Redemptions table
 CREATE TABLE public.redemptions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES public.users(id) ON DELETE CASCADE,
   reward_id TEXT NOT NULL,
   reward_name TEXT NOT NULL,
   points_cost INTEGER NOT NULL,
   status TEXT CHECK (status IN ('pending', 'completed', 'cancelled')) DEFAULT 'pending',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  completed_at TIMESTAMP WITH TIME ZONE
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  completed_at TIMESTAMPTZ
 );
 
--- User settings table
-CREATE TABLE public.user_settings (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES public.users(id) ON DELETE CASCADE UNIQUE,
-  notifications BOOLEAN DEFAULT true,
-  haptic_feedback BOOLEAN DEFAULT true,
-  auto_sync BOOLEAN DEFAULT true,
-  theme TEXT CHECK (theme IN ('light', 'dark', 'auto')) DEFAULT 'auto',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- Indexes for performance
+-- 6️⃣ Indexes for performance
 CREATE INDEX idx_points_transactions_user_id ON public.points_transactions(user_id);
 CREATE INDEX idx_points_transactions_created_at ON public.points_transactions(created_at DESC);
 CREATE INDEX idx_check_ins_user_id ON public.check_ins(user_id);
 CREATE INDEX idx_check_ins_created_at ON public.check_ins(created_at DESC);
 CREATE INDEX idx_redemptions_user_id ON public.redemptions(user_id);
 
--- Row Level Security (RLS) policies
+-- 7️⃣ Enable Row Level Security
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.points_transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.check_ins ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.redemptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.user_settings ENABLE ROW LEVEL SECURITY;
 
--- Users can only see and modify their own data
+-- 8️⃣ RLS Policies
 CREATE POLICY "Users can view own profile" ON public.users
   FOR SELECT USING (auth.uid() = id);
 
 CREATE POLICY "Users can update own profile" ON public.users
   FOR UPDATE USING (auth.uid() = id);
+
+CREATE POLICY "Users can manage own settings" ON public.user_settings
+  FOR ALL USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can view own transactions" ON public.points_transactions
   FOR SELECT USING (auth.uid() = user_id);
@@ -142,29 +142,26 @@ CREATE POLICY "Users can view own check-ins" ON public.check_ins
 CREATE POLICY "Users can view own redemptions" ON public.redemptions
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can view own settings" ON public.user_settings
-  FOR ALL USING (auth.uid() = user_id);
-
--- Functions and triggers
+-- 9️⃣ Function to create user profile on signup
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO public.users (id, email, name)
   VALUES (NEW.id, NEW.email, COALESCE(NEW.raw_user_meta_data->>'name', 'User'));
-  
+
   INSERT INTO public.user_settings (user_id)
   VALUES (NEW.id);
-  
+
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to create user profile on signup
+-- 10️⃣ Trigger to create user profile on signup
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- Function to update user points
+-- 11️⃣ Function to update user points
 CREATE OR REPLACE FUNCTION public.update_user_points(
   p_user_id UUID,
   p_points INTEGER,
@@ -176,7 +173,7 @@ BEGIN
   -- Insert transaction record
   INSERT INTO public.points_transactions (user_id, points, reason, type)
   VALUES (p_user_id, p_points, p_reason, p_type);
-  
+
   -- Update user points balance
   UPDATE public.users
   SET points = points + p_points,
