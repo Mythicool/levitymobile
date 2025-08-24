@@ -1,16 +1,20 @@
 [build]
   # Build command for Expo web
-  command = "cd LevityLoyaltyExpo && npm install && npm run web:build"
-  
+  command = "cd LevityLoyaltyExpo && npm ci && npm run web:build"
+
   # Directory to publish (Expo web build output)
   publish = "LevityLoyaltyExpo/dist"
 
 [build.environment]
   # Node.js version
   NODE_VERSION = "18"
-  
-  # Expo environment
-  EXPO_PUBLIC_API_URL = "https://levity-loyalty-api.netlify.app"
+
+  # Expo environment variables
+  EXPO_PUBLIC_API_URL = "https://levity-loyalty-mobile.netlify.app"
+  NODE_ENV = "production"
+
+  # Build optimization
+  CI = "true"
 
 # Redirect rules for SPA
 [[redirects]]
@@ -26,9 +30,20 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
 
 [[headers]]
-  for = "/static/*"
+  for = "/_expo/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.css"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 

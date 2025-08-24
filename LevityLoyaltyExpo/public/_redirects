@@ -1,0 +1,11 @@
+# Netlify redirects for Levity Loyalty Mobile App
+# This ensures all routes are handled by the React app
+
+# SPA fallback - all routes go to index.html
+/*    /index.html   200
+
+# API redirects (if backend is deployed separately)
+/api/*  https://levity-loyalty-api.netlify.app/api/:splat  200
+
+# Legacy redirects (if needed)
+/app/*  /:splat  301
