@@ -1,0 +1,56 @@
+### Supabase Authentication API Tests
+### Use with REST Client extension
+
+@supabaseUrl = https://ctqhnyvxowuruezekmqo.supabase.co
+@anonKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cWhueXZ4b3d1cnVlemVrbXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNjA4NjksImV4cCI6MjA3MTYzNjg2OX0.ANA3jw2Byp-7u6o30AH3j8IyclDgx5XivTk_WAfOH6k
+@testEmail = test@example.com
+@testPassword = password123
+
+### 1. Sign Up New User
+POST {{supabaseUrl}}/auth/v1/signup
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{anonKey}}
+
+{
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}",
+  "data": {
+    "name": "Test User"
+  }
+}
+
+### 2. Sign In User
+POST {{supabaseUrl}}/auth/v1/token?grant_type=password
+Content-Type: application/json
+apikey: {{anonKey}}
+
+{
+  "email": "{{testEmail}}",
+  "password": "{{testPassword}}"
+}
+
+### 3. Get Current User (requires access token from sign in)
+# @name getCurrentUser
+GET {{supabaseUrl}}/auth/v1/user
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 4. Sign Out User
+POST {{supabaseUrl}}/auth/v1/logout
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 5. Refresh Token
+POST {{supabaseUrl}}/auth/v1/token?grant_type=refresh_token
+Content-Type: application/json
+apikey: {{anonKey}}
+
+{
+  "refresh_token": "{{refreshToken}}"
+}
+
+### Variables (replace with actual values after sign in)
+# @accessToken = your_access_token_here
+# @refreshToken = your_refresh_token_here

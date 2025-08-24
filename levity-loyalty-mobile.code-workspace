@@ -1,0 +1,149 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Root",
+      "path": "."
+    },
+    {
+      "name": "📱 Mobile App",
+      "path": "./LevityLoyaltyExpo"
+    },
+    {
+      "name": "🗄️ Database Docs",
+      "path": "./docs"
+    }
+  ],
+  "settings": {
+    // Inherit from .vscode/settings.json
+  },
+  "extensions": {
+    "recommendations": [
+      // Database & API Management
+      "mtxr.sqltools",
+      "rangav.vscode-thunder-client",
+      "humao.rest-client",
+      "supabase.vscode-supabase-extension",
+      
+      // React Native & Expo Development
+      "msjsdiag.vscode-react-native",
+      "expo.vscode-expo-tools",
+      "dsznajder.es7-react-js-snippets",
+      
+      // Development Productivity
+      "eamodio.gitlens",
+      "ms-azuretools.vscode-docker",
+      "usernamehw.errorlens",
+      "formulahendry.auto-rename-tag",
+      "coenraads.bracket-pair-colorizer-2",
+      "alefragnani.bookmarks",
+      "christian-kohler.path-intellisense",
+      "steoates.autoimport",
+      
+      // Code Quality
+      "esbenp.prettier-vscode",
+      "dbaeumer.vscode-eslint",
+      "rbbit.typescript-hero",
+      "streetsidesoftware.code-spell-checker",
+      
+      // Additional Utilities
+      "bradlc.vscode-tailwindcss",
+      "redhat.vscode-yaml"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Start Expo Development Server",
+        "type": "shell",
+        "command": "npm",
+        "args": ["start"],
+        "options": {
+          "cwd": "${workspaceFolder}/LevityLoyaltyExpo"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Build Web",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "web:build"],
+        "options": {
+          "cwd": "${workspaceFolder}/LevityLoyaltyExpo"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Run Tests",
+        "type": "shell",
+        "command": "npm",
+        "args": ["test"],
+        "options": {
+          "cwd": "${workspaceFolder}/LevityLoyaltyExpo"
+        },
+        "group": "test",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Lint Code",
+        "type": "shell",
+        "command": "npm",
+        "args": ["run", "lint"],
+        "options": {
+          "cwd": "${workspaceFolder}/LevityLoyaltyExpo"
+        },
+        "group": "build",
+        "presentation": {
+          "echo": true,
+          "reveal": "always",
+          "focus": false,
+          "panel": "shared"
+        },
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug React Native",
+        "type": "reactnative",
+        "request": "launch",
+        "platform": "ios",
+        "sourceMaps": true,
+        "outDir": "${workspaceFolder}/LevityLoyaltyExpo/.expo",
+        "runArguments": ["--no-packager"]
+      },
+      {
+        "name": "Debug React Native (Android)",
+        "type": "reactnative",
+        "request": "launch",
+        "platform": "android",
+        "sourceMaps": true,
+        "outDir": "${workspaceFolder}/LevityLoyaltyExpo/.expo",
+        "runArguments": ["--no-packager"]
+      }
+    ]
+  }
+}

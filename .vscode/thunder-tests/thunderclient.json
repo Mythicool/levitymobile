@@ -1,0 +1,165 @@
+[
+  {
+    "clientName": "Thunder Client",
+    "collectionName": "Supabase API Tests",
+    "collectionId": "supabase-api-tests",
+    "dateExported": "2024-08-24T12:00:00.000Z",
+    "version": "1.1",
+    "folders": [
+      {
+        "id": "auth-folder",
+        "name": "Authentication",
+        "containerId": "",
+        "created": "2024-08-24T12:00:00.000Z",
+        "sortNum": 10000
+      },
+      {
+        "id": "users-folder", 
+        "name": "Users",
+        "containerId": "",
+        "created": "2024-08-24T12:00:00.000Z",
+        "sortNum": 20000
+      },
+      {
+        "id": "checkins-folder",
+        "name": "Check-ins",
+        "containerId": "",
+        "created": "2024-08-24T12:00:00.000Z", 
+        "sortNum": 30000
+      },
+      {
+        "id": "points-folder",
+        "name": "Points",
+        "containerId": "",
+        "created": "2024-08-24T12:00:00.000Z",
+        "sortNum": 40000
+      }
+    ],
+    "requests": [
+      {
+        "id": "auth-signup",
+        "name": "Sign Up User",
+        "url": "https://ctqhnyvxowuruezekmqo.supabase.co/auth/v1/signup",
+        "method": "POST",
+        "sortNum": 10000,
+        "created": "2024-08-24T12:00:00.000Z",
+        "modified": "2024-08-24T12:00:00.000Z",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"data\": {\n    \"name\": \"Test User\"\n  }\n}"
+        },
+        "containerId": "auth-folder"
+      },
+      {
+        "id": "auth-signin",
+        "name": "Sign In User",
+        "url": "https://ctqhnyvxowuruezekmqo.supabase.co/auth/v1/token?grant_type=password",
+        "method": "POST",
+        "sortNum": 10001,
+        "created": "2024-08-24T12:00:00.000Z",
+        "modified": "2024-08-24T12:00:00.000Z",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+        },
+        "containerId": "auth-folder"
+      },
+      {
+        "id": "users-get",
+        "name": "Get User Profile",
+        "url": "https://ctqhnyvxowuruezekmqo.supabase.co/rest/v1/users?select=*",
+        "method": "GET",
+        "sortNum": 20000,
+        "created": "2024-08-24T12:00:00.000Z",
+        "modified": "2024-08-24T12:00:00.000Z",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{ACCESS_TOKEN}}"
+          }
+        ],
+        "containerId": "users-folder"
+      },
+      {
+        "id": "checkins-post",
+        "name": "Create Check-in",
+        "url": "https://ctqhnyvxowuruezekmqo.supabase.co/rest/v1/check_ins",
+        "method": "POST",
+        "sortNum": 30000,
+        "created": "2024-08-24T12:00:00.000Z",
+        "modified": "2024-08-24T12:00:00.000Z",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{ACCESS_TOKEN}}"
+          },
+          {
+            "name": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "name": "Prefer",
+            "value": "return=representation"
+          }
+        ],
+        "body": {
+          "type": "json",
+          "raw": "{\n  \"user_id\": \"{{USER_ID}}\",\n  \"location\": \"Office\",\n  \"points_earned\": 10\n}"
+        },
+        "containerId": "checkins-folder"
+      },
+      {
+        "id": "points-get",
+        "name": "Get Points History",
+        "url": "https://ctqhnyvxowuruezekmqo.supabase.co/rest/v1/points_transactions?select=*&order=created_at.desc",
+        "method": "GET",
+        "sortNum": 40000,
+        "created": "2024-08-24T12:00:00.000Z",
+        "modified": "2024-08-24T12:00:00.000Z",
+        "headers": [
+          {
+            "name": "apikey",
+            "value": "{{SUPABASE_ANON_KEY}}"
+          },
+          {
+            "name": "Authorization",
+            "value": "Bearer {{ACCESS_TOKEN}}"
+          }
+        ],
+        "containerId": "points-folder"
+      }
+    ]
+  }
+]

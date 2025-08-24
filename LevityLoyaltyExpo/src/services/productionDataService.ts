@@ -3,8 +3,8 @@
  * Supabase PostgreSQL backend with authentication
  */
 
-import { supabase, User, PointsTransaction, CheckIn, Redemption, UserSettings } from './supabase';
 import { AuthError, PostgrestError } from '@supabase/supabase-js';
+import { CheckIn, PointsTransaction, Redemption, supabase, User, UserSettings } from './supabase';
 
 // Helper function to handle Supabase errors
 const handleSupabaseError = (error: AuthError | PostgrestError | null, defaultMessage: string) => {
@@ -14,13 +14,16 @@ const handleSupabaseError = (error: AuthError | PostgrestError | null, defaultMe
   
   // Handle specific error types
   if (error.message.includes('Invalid login credentials')) {
-    return 'Invalid email or password';
+    return 'Invalid email or password. Please check your credentials and try again.';
   }
   if (error.message.includes('User already registered')) {
-    return 'An account with this email already exists';
+    return 'An account with this email already exists. Please sign in instead.';
   }
   if (error.message.includes('Email not confirmed')) {
-    return 'Please check your email and confirm your account';
+    return 'Account created but email confirmation is required. Please check your email and confirm your account, then try signing in again.';
+  }
+  if (error.message.includes('Email address') && error.message.includes('invalid')) {
+    return 'Please enter a valid email address.';
   }
   
   return error.message || defaultMessage;

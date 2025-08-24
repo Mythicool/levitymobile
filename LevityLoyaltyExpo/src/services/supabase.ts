@@ -3,8 +3,8 @@
  * Production-ready PostgreSQL database with authentication
  */
 
-import { createClient } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL || 'https://your-project.supabase.co';
@@ -17,6 +17,15 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
+    // Improved session handling for cross-device scenarios
+    flowType: 'pkce', // Use PKCE flow for better security
+    debug: process.env.NODE_ENV === 'development', // Enable debug logging in development
+  },
+  // Global configuration
+  global: {
+    headers: {
+      'X-Client-Info': 'levity-loyalty-mobile',
+    },
   },
 });
 

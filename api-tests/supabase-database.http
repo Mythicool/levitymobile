@@ -1,0 +1,110 @@
+### Supabase Database API Tests
+### Use with REST Client extension
+
+@supabaseUrl = https://ctqhnyvxowuruezekmqo.supabase.co
+@anonKey = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cWhueXZ4b3d1cnVlemVrbXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNjA4NjksImV4cCI6MjA3MTYzNjg2OX0.ANA3jw2Byp-7u6o30AH3j8IyclDgx5XivTk_WAfOH6k
+@accessToken = your_access_token_here
+@userId = your_user_id_here
+
+### 1. Get User Profile
+GET {{supabaseUrl}}/rest/v1/users?select=*
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 2. Update User Profile
+PATCH {{supabaseUrl}}/rest/v1/users?id=eq.{{userId}}
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+Prefer: return=representation
+
+{
+  "name": "Updated Test User"
+}
+
+### 3. Get User Settings
+GET {{supabaseUrl}}/rest/v1/user_settings?user_id=eq.{{userId}}
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 4. Update User Settings
+PATCH {{supabaseUrl}}/rest/v1/user_settings?user_id=eq.{{userId}}
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+Prefer: return=representation
+
+{
+  "notifications": false,
+  "theme": "dark"
+}
+
+### 5. Create Check-in
+POST {{supabaseUrl}}/rest/v1/check_ins
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+Prefer: return=representation
+
+{
+  "user_id": "{{userId}}",
+  "location": "Office",
+  "points_earned": 10
+}
+
+### 6. Get Check-in History
+GET {{supabaseUrl}}/rest/v1/check_ins?user_id=eq.{{userId}}&order=created_at.desc&limit=10
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 7. Get Points Transactions
+GET {{supabaseUrl}}/rest/v1/points_transactions?user_id=eq.{{userId}}&order=created_at.desc&limit=20
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 8. Create Points Transaction
+POST {{supabaseUrl}}/rest/v1/points_transactions
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+Prefer: return=representation
+
+{
+  "user_id": "{{userId}}",
+  "points": 50,
+  "reason": "Bonus points",
+  "type": "earned"
+}
+
+### 9. Get Redemption History
+GET {{supabaseUrl}}/rest/v1/redemptions?user_id=eq.{{userId}}&order=created_at.desc
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+### 10. Create Redemption
+POST {{supabaseUrl}}/rest/v1/redemptions
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+Prefer: return=representation
+
+{
+  "user_id": "{{userId}}",
+  "reward_id": "coffee-voucher",
+  "reward_name": "Free Coffee",
+  "points_cost": 100,
+  "status": "pending"
+}
+
+### 11. Call Database Function - Update User Points
+POST {{supabaseUrl}}/rest/v1/rpc/update_user_points
+Content-Type: application/json
+apikey: {{anonKey}}
+Authorization: Bearer {{accessToken}}
+
+{
+  "p_user_id": "{{userId}}",
+  "p_points": 25,
+  "p_reason": "Daily bonus",
+  "p_type": "earned"
+}

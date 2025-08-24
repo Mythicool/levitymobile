@@ -1,0 +1,42 @@
+[
+  {
+    "client": "Thunder Client",
+    "environmentName": "Supabase Production",
+    "dateExported": "2024-08-24T12:00:00.000Z",
+    "version": "1.0",
+    "variables": [
+      {
+        "name": "SUPABASE_URL",
+        "value": "https://ctqhnyvxowuruezekmqo.supabase.co"
+      },
+      {
+        "name": "SUPABASE_ANON_KEY",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN0cWhueXZ4b3d1cnVlemVrbXFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYwNjA4NjksImV4cCI6MjA3MTYzNjg2OX0.ANA3jw2Byp-7u6o30AH3j8IyclDgx5XivTk_WAfOH6k"
+      },
+      {
+        "name": "ACCESS_TOKEN",
+        "value": "{{REPLACE_WITH_ACTUAL_TOKEN}}"
+      },
+      {
+        "name": "USER_ID",
+        "value": "{{REPLACE_WITH_ACTUAL_USER_ID}}"
+      }
+    ]
+  },
+  {
+    "client": "Thunder Client",
+    "environmentName": "Local Development",
+    "dateExported": "2024-08-24T12:00:00.000Z",
+    "version": "1.0",
+    "variables": [
+      {
+        "name": "API_URL",
+        "value": "http://localhost:3000/api"
+      },
+      {
+        "name": "ACCESS_TOKEN",
+        "value": "{{REPLACE_WITH_LOCAL_TOKEN}}"
+      }
+    ]
+  }
+]

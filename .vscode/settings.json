@@ -1,0 +1,166 @@
+{
+  // Editor Configuration
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  
+  // File Associations
+  "files.associations": {
+    "*.tsx": "typescriptreact",
+    "*.ts": "typescript",
+    "*.js": "javascript",
+    "*.jsx": "javascriptreact"
+  },
+  
+  // Language-specific settings
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  // ESLint Configuration
+  "eslint.workingDirectories": ["LevityLoyaltyExpo"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  
+  // TypeScript Configuration
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  
+  // React Native Tools Configuration
+  "react-native-tools.showUserTips": false,
+  "react-native-tools.projectRoot": "./LevityLoyaltyExpo",
+  
+  // Expo Tools Configuration
+  "expo.projectRoot": "./LevityLoyaltyExpo",
+  
+  // SQLTools Configuration
+  "sqltools.connections": [
+    {
+      "name": "Supabase Production",
+      "driver": "PostgreSQL",
+      "server": "db.ctqhnyvxowuruezekmqo.supabase.co",
+      "port": 5432,
+      "database": "postgres",
+      "username": "postgres",
+      "askForPassword": true,
+      "connectionTimeout": 30
+    }
+  ],
+  
+  // Thunder Client Configuration
+  "thunder-client.workspaceRelativePath": ".vscode/thunder-tests",
+  "thunder-client.saveToWorkspace": true,
+  
+  // Error Lens Configuration
+  "errorLens.enabledDiagnosticLevels": ["error", "warning", "info"],
+  "errorLens.excludeBySource": ["cSpell"],
+  
+  // Code Spell Checker Configuration
+  "cSpell.words": [
+    "Supabase",
+    "Levity",
+    "Expo",
+    "AsyncStorage",
+    "Netlify",
+    "PostgreSQL",
+    "TIMESTAMPTZ",
+    "checkin",
+    "checkins",
+    "redemptions",
+    "pointsService",
+    "authService",
+    "userService",
+    "checkinService",
+    "redemptionService",
+    "settingsService"
+  ],
+  
+  // Path Intellisense Configuration
+  "path-intellisense.mappings": {
+    "@": "${workspaceRoot}/LevityLoyaltyExpo/src",
+    "~": "${workspaceRoot}/LevityLoyaltyExpo"
+  },
+  
+  // Auto Import Configuration
+  "autoimport.filesToScan": "**/*.{ts,tsx,js,jsx}",
+  "autoimport.showNotifications": true,
+  "autoimport.doubleQuotes": false,
+  
+  // Bracket Pair Colorizer Configuration
+  "bracket-pair-colorizer-2.colors": [
+    "#ffd700",
+    "#da70d6",
+    "#87ceeb"
+  ],
+  
+  // File Explorer Configuration
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js",
+    "*.tsx": "${capture}.js",
+    "package.json": "package-lock.json,yarn.lock,pnpm-lock.yaml"
+  },
+  
+  // Search Configuration
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.expo": true,
+    "**/ios": true,
+    "**/android": true
+  },
+  
+  // Files Configuration
+  "files.exclude": {
+    "**/.expo": true,
+    "**/node_modules": true
+  },
+  
+  // Terminal Configuration
+  "terminal.integrated.defaultProfile.osx": "bash",
+  "terminal.integrated.cwd": "${workspaceFolder}/LevityLoyaltyExpo",
+  
+  // Git Configuration
+  "git.ignoreLimitWarning": true,
+  "gitlens.codeLens.enabled": true,
+  "gitlens.currentLine.enabled": true,
+  
+  // Prettier Configuration
+  "prettier.configPath": "./LevityLoyaltyExpo/.prettierrc",
+  "prettier.ignorePath": "./LevityLoyaltyExpo/.prettierignore",
+  
+  // Auto Rename Tag Configuration
+  "auto-rename-tag.activationOnLanguage": [
+    "html",
+    "xml",
+    "php",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}
