@@ -5,7 +5,10 @@
 
 import React, {createContext, useContext, useState, useEffect, ReactNode} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-// Mock user service for demo
+import { authService, userService, isUsingProductionDB, getServiceInfo } from '../services/dataServiceAdapter';
+import { offlineStorage } from '../services/offlineStorage';
+
+// Fallback mock user service for demo (when production DB is not available)
 const mockUserService = {
   async authenticateUser(email: string, password: string) {
     // Simulate API delay
@@ -137,12 +140,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
 
   const loadUserFromCloud = async (userId: string) => {
     try {
-      const result = await mockUserService.getUserById(userId);
+      // Use production service if available, otherwise fallback to mock
+      const service = isUsingProductionDB() ? authService : mockUserService;
+
+      let result;
+      if (isUsingProductionDB()) {
+        result = await authService.getCurrentUser();
+      } else {
+        result = await mockUserService.getUserById(userId);
+      }
+
       if (result.success) {
-        setUser(result.user);
+        setUser(result.data || result.user);
+        // Save user data to offline storage
+        await offlineStorage.saveUserData(result.data || result.user);
       } else {
         // If user not found in cloud, clear local storage
         await AsyncStorage.removeItem('levity_user_id');
+        await offlineStorage.clearUserData();
       }
     } catch (error) {
       console.error('Error loading user from cloud:', error);
@@ -153,16 +168,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
-      const result = await mockUserService.authenticateUser(email, password);
+
+      // Use production service if available, otherwise fallback to mock
+      const service = isUsingProductionDB() ? authService : mockUserService;
+
+      let result;
+      if (isUsingProductionDB()) {
+        result = await authService.signIn(email, password);
+      } else {
+        result = await mockUserService.authenticateUser(email, password);
+      }
 
       if (result.success) {
-        setUser(result.user);
-        await AsyncStorage.setItem('levity_user_id', result.user.id);
+        const userData = result.data || result.user;
+        setUser(userData);
+        await AsyncStorage.setItem('levity_user_id', userData.id);
+
+        // Save user data to offline storage
+        await offlineStorage.saveUserData(userData);
+
+        console.log(`Logged in with ${isUsingProductionDB() ? 'Supabase' : 'Mock'} service:`, getServiceInfo());
         return {success: true};
       } else {
         return {success: false, error: result.error};
       }
     } catch (error) {
+      console.error('Login error:', error);
       return {success: false, error: (error as Error).message};
     } finally {
       setLoading(false);
@@ -173,24 +204,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     try {
       setLoading(true);
 
-      // Check if user already exists
-      const existingUser = await mockUserService.getUserByEmail(email);
-      if (existingUser.success) {
-        return {success: false, error: 'User with this email already exists'};
-      }
+      // Use production service if available, otherwise fallback to mock
+      if (isUsingProductionDB()) {
+        const result = await authService.signUp({name, email, password});
 
-      // Create new user
-      const result = await mockUserService.createUser({name, email, password});
+        if (result.success) {
+          const userData = result.data;
+          setUser(userData);
+          await AsyncStorage.setItem('levity_user_id', userData.id);
 
-      if (result.success) {
-        const {password: _, ...userWithoutPassword} = result.user;
-        setUser(userWithoutPassword);
-        await AsyncStorage.setItem('levity_user_id', result.user.id);
-        return {success: true};
+          // Save user data to offline storage
+          await offlineStorage.saveUserData(userData);
+
+          console.log('Registered with Supabase service:', getServiceInfo());
+          return {success: true};
+        } else {
+          return {success: false, error: result.error};
+        }
       } else {
-        return {success: false, error: result.error};
+        // Check if user already exists (mock service)
+        const existingUser = await mockUserService.getUserByEmail(email);
+        if (existingUser.success) {
+          return {success: false, error: 'User with this email already exists'};
+        }
+
+        // Create new user with mock service
+        const result = await mockUserService.createUser({name, email, password});
+
+        if (result.success) {
+          const {password: _, ...userWithoutPassword} = result.user;
+          setUser(userWithoutPassword);
+          await AsyncStorage.setItem('levity_user_id', result.user.id);
+
+          // Save user data to offline storage
+          await offlineStorage.saveUserData(userWithoutPassword);
+
+          console.log('Registered with Mock service:', getServiceInfo());
+          return {success: true};
+        } else {
+          return {success: false, error: result.error};
+        }
       }
     } catch (error) {
+      console.error('Registration error:', error);
       return {success: false, error: (error as Error).message};
     } finally {
       setLoading(false);
@@ -198,17 +254,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   };
 
   const logout = async () => {
-    setUser(null);
-    await AsyncStorage.removeItem('levity_user_id');
+    try {
+      // Sign out from production service if available
+      if (isUsingProductionDB()) {
+        await authService.signOut();
+      }
+
+      setUser(null);
+      await AsyncStorage.removeItem('levity_user_id');
+      await offlineStorage.clearUserData();
+
+      console.log('Logged out from', isUsingProductionDB() ? 'Supabase' : 'Mock', 'service');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear local data even if remote logout fails
+      setUser(null);
+      await AsyncStorage.removeItem('levity_user_id');
+      await offlineStorage.clearUserData();
+    }
   };
 
   const updateUser = async (updates: Partial<User>) => {
     try {
       if (!user) return {success: false, error: 'No user logged in'};
 
-      const result = await mockUserService.updateUser(user.id, updates);
+      let result;
+      if (isUsingProductionDB()) {
+        result = await userService.updateUser(user.id, updates);
+      } else {
+        result = await mockUserService.updateUser(user.id, updates);
+      }
+
       if (result.success) {
-        setUser(result.user);
+        const userData = result.data || result.user;
+        setUser(userData);
+        await offlineStorage.saveUserData(userData);
         return {success: true};
       } else {
         return {success: false, error: result.error};
@@ -223,9 +303,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     if (!user) return;
 
     try {
-      const result = await mockUserService.getUserById(user.id);
+      let result;
+      if (isUsingProductionDB()) {
+        result = await userService.getUserById(user.id);
+      } else {
+        result = await mockUserService.getUserById(user.id);
+      }
+
       if (result.success) {
-        setUser(result.user);
+        const userData = result.data || result.user;
+        setUser(userData);
+        await offlineStorage.saveUserData(userData);
       }
     } catch (error) {
       console.error('Error refreshing user:', error);
